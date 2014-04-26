@@ -150,9 +150,23 @@ var pt = protok.create({
   pt.run();
 ```
 
+Usually the synhronous protocols are made of sequential request and response couples. We can't do anything in the middle of request and response couple. If we are server and we want to send a new request to the client we need to do it between request and responce couples. For this, protok has special 'interrupt' function:
 
-
-
+```js
+pt.interrupt(function(){
+    someSyncWork();
+    response({status: "ok"});
+    pt.next();
+});
+```
+or
+```js
+pt.interrupt(function(){
+    someAsyncWork(function(){
+        response({status: "ok"});
+        pt.next();
+    });
+});
 
 
 
@@ -185,7 +199,7 @@ var pt = protok.create({
 
 
 
-In synchronous protocol is more important to have response to every request. In asynhronous protocol is more freely, it depends on the situation. If we have tight structure and very independed modules in our project, sending responces  to exactly the same modules and the some operations could be useful f.e. we requested to create an user and then got response about success or failure of this operation. In other case let's say we have sent information about some mobile application use statistic, it's not very useful to receive response about success about receiving that statistical information. It would be better to react for server somehow and trigger other actions like send request to another client module responsible for popping up some message for the user.
+In synchronous protocol is more important to have response to every request. In asynhronous protocol is more freely, it depends on the situation. If we have tight structure and very independed modules in our project, sending responces  to exactly the same modules and the some operations could be useful f.e. we requested to create an user and then got response about success or failure of this operation. In other case let's say we have sent information about some mobile application use statistic, it's not very useful to receive response about success about receiving that statistical information. It would be better to react for server somehow and trigger other actions like send request to client's another module responsible for popping up some message for the user.
 
 
 
