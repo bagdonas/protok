@@ -111,7 +111,8 @@ or raw data
 
 
 
-## How synchronous mode works
+## How synchronous mode work
+Synchronous mode is enabled by setting 'async: false' option in protok.create function. In synchronous mode only one 'json' or 'line' event should be emited at the time. 'pt.next()' is the trigger for parsing and emitting another request. It's very important to have one and only one 'pt.next()' call from request event function. It's good to use one 'pt.next()' at the end of request event function for synchronous code, and others put as the last call of all asynchronous code. First one will be called only if all the code in event function is synchronous.
 
 ```js
 var protok = require('protok');
@@ -122,10 +123,17 @@ var pt = protok.create({
   });
 
   pt.on('json', function(data) {
-    if(data.operation==='hello') {
-    
+    if(data.operation==='test1') {
+        someSyncFunc(); 
     }
-  
+    else if(data.operation==='test2'){
+        // if we have asynchronous code, we should return it
+        // to prevent additional call at the end of event function
+        return someAsynFunc(function() {
+            pt.next(); // call 'pt.next()' when asynchronous code will be finished
+        });
+    }
+    pt.next(); // this should be called only if all the code above is synchronous
   }
   
   pt.run();
