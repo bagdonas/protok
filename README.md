@@ -24,7 +24,7 @@ Abuse prevention
 Protok.js splits all incoming traffic by separator string(default is '\r\n')
 
 
-Protok.js has two main operation modes:
+Protok.js has two operation modes:
 - Synchronous
 - Asynchronous
 
@@ -37,10 +37,12 @@ Another use case for asynchronous protocol would be
 
 Protok.js buffers requests
 
+It's quite simple, and fits for many use cases
+
 
 ## Asynchronous
 Real time
-In asynchronous mode every thunk of data is parsed and processed as soon as data is got. Though there are some flow stoping mechanisms to limit how many executes commands could be depending on server load.
+In asynchronous mode every thunk of data is parsed and processed as soon as data is received. Though there are some flow stoping mechanisms to limit how many requested could be active depending on server load.
 
 Nowdays if it's possible the asynchronous protocol should be used. every request and responce is independed of each other.
 
@@ -78,7 +80,7 @@ var pt = protok.create({
 ```
 
 
-Protok.js is suitable for using on server and also client side.
+Protok.js is suitable for using on server and client side.
 
 
 Server side
@@ -87,6 +89,23 @@ Server side
 ```
 
 
+Protok can output requests in one of the two ways:
+
+```js
+  //if we will send f.e. '{"operation":"message","body":"test"}\r\n'
+  pt.on('json', function(data) {
+    // data is parsed json object, so
+    // we will get data.operation='message' and data.body='test'
+  }
+```
+
+```js
+  //if we will send f.e 'my_data\r\n'
+  pt.on('line', function(data) {
+    // data is raw line delimited by \r\n (by default), wo
+    // we will receive data='my_data'
+  }
+```
 
 
 
