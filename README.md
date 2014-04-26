@@ -89,8 +89,9 @@ Server side
 ```
 
 
-Protok can output requests in one of the two ways:
+Protok can output requests in one of the two formats:
 
+Parsed JSON object
 ```js
   //if we will send f.e. '{"operation":"message","body":"test"}\r\n'
   pt.on('json', function(data) {
@@ -99,6 +100,7 @@ Protok can output requests in one of the two ways:
   }
 ```
 
+Or RAW data
 ```js
   //if we will send f.e 'my_data\r\n'
   pt.on('line', function(data) {
