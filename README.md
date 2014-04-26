@@ -91,7 +91,7 @@ Server side
 
 Protok can output requests in one of the two formats:
 
-Parsed JSON object
+parsed JSON object
 ```js
   //if we will send f.e. '{"operation":"message","body":"test"}\r\n'
   pt.on('json', function(data) {
@@ -100,7 +100,7 @@ Parsed JSON object
   }
 ```
 
-Or RAW data
+or raw data
 ```js
   //if we will send f.e 'my_data\r\n'
   pt.on('line', function(data) {
@@ -111,6 +111,25 @@ Or RAW data
 
 
 
+## How synchronous mode works
+
+```js
+var protok = require('protok');
+
+var pt = protok.create({
+    socket: socket,
+    async: false,
+  });
+
+  pt.on('json', function(data) {
+    if(data.operation==='hello') {
+    
+    }
+  
+  }
+  
+  pt.run();
+```
 
 
 
