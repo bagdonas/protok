@@ -139,8 +139,29 @@ var pt = protok.create({
   pt.run();
 ```
 
+## How asynchronous mode work
+Asynchronous mode in asynchronous javascript world is easier to use and grasp. Just imagine we send many blocks of information to the server and protok parses it and emits request events instantly. There could be dozens of request events emited at the same from the same socket connection. In asynhronous mode everything work more like data packets. Every packet is independed of each other. For this type of protocols some routing information in data packet is needed.
 
+```js
+var protok = require('protok');
 
+var pt = protok.create({
+    socket: socket,
+    async: true,
+  });
+
+  pt.on('json', function(data) {
+    if(data.operation==='test1') {
+        someSyncFunc(); 
+    }
+    else if(data.operation==='test2'){
+        someAsynFunc(function() {
+        });
+    }
+  }
+  
+  pt.run();
+```
 
 
 
