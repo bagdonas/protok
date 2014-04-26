@@ -207,8 +207,7 @@ In synchronous protocol is more important to have response to every request. In 
 
 
 
-Theoretical question: is it possible to send files at the same time in both direction on one connection?
-Of course, why not
+Theoretical question: is it possible to send files at the same time in both directions on one connection? I will clear it. One connection = one channel, no multiplexing, no asynchronous packet like protocol. Just after connection directly send binary data as it is. Server send to client, and client sends to server at the same time. What happens? If everything ok, files will be transferred, but channel will not be utilized efficiently, because in this case tcp connection upstream and downstream obstructs each other. So usually it's not used this way. We can solve this in few ways: use separate connection, or multiplex few channels to one connection.
 
 
 
