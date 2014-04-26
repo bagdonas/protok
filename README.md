@@ -205,3 +205,18 @@ In synchronous protocol is more important to have response to every request. In 
 
 
 
+
+
+Theoretical question: is it possible to send files at the same time in both direction on one connection?
+Of course, why not
+
+
+
+
+
+
+
+
+
+
+
