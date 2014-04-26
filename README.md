@@ -39,6 +39,8 @@ Protok.js buffers requests
 
 It's quite simple, and fits for many use cases
 
+For high speed and efficiency data transfers and where sequence matters
+
 
 ## Asynchronous
 Real time
@@ -49,6 +51,15 @@ Nowdays if it's possible the asynchronous protocol should be used. every request
 For example for mobile application when communicating in real time sending gps coorinates, updating information..
 
 
+For notifications, controlling, simultanious real time application
+
+
+
+It's good pratice to open asynchronous channel for main communication and controlling and then depending on situation to open additional one or more synchronous chanels for hard work. And the main goal of this module is to allow easily make prtocols like this
+
+
+
+For server to server communication, especialy for data transfering
 
 
 
@@ -123,10 +134,10 @@ var pt = protok.create({
   });
 
   pt.on('json', function(data) {
-    if(data.operation==='test1') {
+    if(data.operation === 'test1') {
         someSyncFunc(); 
     }
-    else if(data.operation==='test2'){
+    else if(data.operation === 'test2'){
         // if we have asynchronous code, we should return it
         // to prevent additional call at the end of event function
         return someAsynFunc(function() {
@@ -151,10 +162,10 @@ var pt = protok.create({
   });
 
   pt.on('json', function(data) {
-    if(data.operation==='test1') {
+    if(data.operation === 'test1') {
         someSyncFunc(); 
     }
-    else if(data.operation==='test2'){
+    else if(data.operation === 'test2'){
         someAsynFunc(function() {
         });
     }
