@@ -150,8 +150,16 @@ var pt = protok.create({
   pt.run();
 ```
 
+
+
+
+
+
+
+
+
 ## How asynchronous mode work
-Asynchronous mode in asynchronous javascript world is easier to use and grasp. Just imagine we send many blocks of information to the server and protok parses it and emits request events instantly. There could be dozens of request events emited at the same from the same socket connection. In asynhronous mode everything work more like data packets. Every packet is independed of each other. For this type of protocols some routing information in data packet is needed.
+Asynchronous mode in asynchronous javascript world is easier to use and grasp. Just imagine we send many blocks of information to the server and protok parses it and emits request events instantly. There could be dozens of request events emited at the same from the same socket connection. In asynhronous mode everything work more like data packets. Every packet is independed of each other. Asynchronous mode is convenient because many modules or classes can communicate at the same chanell simultaniously. For this type of protocols some routing information in the data packet is needed because it's more like packet exhancging between modules or classes in server and modules or classes in client and in both directions. 
 
 ```js
 var protok = require('protok');
@@ -177,7 +185,7 @@ var pt = protok.create({
 
 
 
-
+In synchronous protocol is more important to have response to every request. In asynhronous protocol is more freely, it depends on the situation. If we have tight structure and very independed modules in our project, sending responces  to exactly the same modules and the some operations could be useful f.e. we requested to create an user and then got response about success or failure of this operation. In other case let's say we have sent information about some mobile application use statistic, it's not very useful to receive response about success about receiving that statistical information. It would be better to react for server somehow and trigger other actions like send request to another client module responsible for popping up some message for the user.
 
 
 
