@@ -2,6 +2,10 @@
 
 A node.js module to easily make all kinds of protocols.
 
+
+Simple module for simple protols
+
+
 ##Features
 
 
@@ -30,6 +34,17 @@ Protok.js has two operation modes:
 
 
 ## Synchronous
+
+
+For file transfering - allows you to esasily get 
+
+Some real world examples: Imagine we need to transfer file without evverhead and in fastest possible way. We make connection to server and send header with information about file: filename, filesize modify time. Protok allows you to receive header as json, easily extract file information, and then instantly get node.js stream from the same connection and transfer file in high speed. Stream will automaticly ends when it reaches the bytes-to-stream limit set on stream get function. After that protok returns to requests listenting mode.
+
+```js
+var rs = pt.getStream(filesize);
+```
+
+
 In synchronous mode every data thunk is processed sequently one after another every time blocking the flow.
 Synchronous is useful when sequence and consistency matters. For example if we are writing some file management protocol like FTP, and let's imagine we want to send two commands: "mkdir test", "rmdir test". For this case it's very important for the protocol to be synchronous besause otherwise if both commands would be executed at the same time, you can't be sure if the directory was firstly created and secondly deleted or it was deleted(unexisted) and then created.
 Generally in synhronic communication, the server should send respnce after each request, and client send another request only after receives responce. And the downside is that every time when the cycle is repeating, latency of the connection is slowing every command. It depends on the case, but sometimes we can send more commands in the row expecting that everything will be ok. Of course tracking of the responces will be harder because if we send three commands in the row, we are going to receive them in the row too. But it's good that in synchronous protocl all of them will be in the some order as requests.
@@ -210,8 +225,13 @@ In synchronous protocol is more important to have response to every request. In 
 Theoretical question: is it possible to send files at the same time in both directions on one connection? I will clear it. One connection = one channel, no multiplexing, no asynchronous packet like protocol. Just after connection directly send binary data as it is. Server send to client, and client sends to server at the same time. What happens? If everything ok, files will be transferred, but channel will not be utilized efficiently, because in this case tcp connection upstream and downstream obstructs each other. So usually it's not used this way. We can solve this in few ways: use separate connection, or multiplex few channels to one connection.
 
 
+##Author
+Martynas Bagdonas
 
+Check out some other interesting projects on my [blog](http://martynas.bagdonas.net/).
 
+##License
+MIT
 
 
 
