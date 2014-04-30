@@ -106,7 +106,7 @@ var pt = protok.create({
 ```
 
 
-Protok.js is suitable for using on server and client side.
+Protok.js is suitable for using on server and client side. You just need to provide it with socket.
 
 
 Server side
@@ -117,7 +117,7 @@ Server side
 
 Protok can output requests in one of the two formats:
 
-parsed JSON object
+parsed JSON object, convenient and I generally recomend to use it, because no need additional parsing of received data line
 ```js
   //if we will send f.e. '{"operation":"message","body":"test"}\r\n'
   pt.on('json', function(data) {
@@ -126,7 +126,7 @@ parsed JSON object
   }
 ```
 
-or raw data
+or raw data, if you are going to parse it different way
 ```js
   //if we will send f.e 'my_data\r\n'
   pt.on('line', function(data) {
@@ -135,6 +135,39 @@ or raw data
   }
 ```
 
+
+
+## How asynchronous mode work
+I will explaing asynchronous first, because asynchronous mode in asynchronous javascript world is easier to use and grasp. It's very simple - you send many lines of information(usually encoded to json) delimited by "\r\n"(again usually) and node.js server running protok on that socket executes all those requess simultaniously. Asynchronous means that it parses and emits request events instantly. In asynhronous mode everything works more like a data packets. Every packet is independed of each other. Asynchronous mode is convenient because many modules or classes can communicate in the same chanel simultaniously. And for that kind of protocols usually some routing information is required to know for which controller, module or class it's dedicated for.
+
+
+In this example we will call it "action". And below is a line which should be sent by the client to execute someSyncFunc();
+
+{"action": "userClickedOk"}\r\n
+
+```js
+var protok = require('protok');
+
+var pt = protok.create({
+    socket: socket,
+    async: true,
+  });
+
+  pt.on('json', function(data) {
+    if(data.action === 'userClickedOk') {
+        someSyncFunc(); 
+    }
+    else if(data.action === 'someOtherAction'){
+        someAsynFunc(function() {
+            //we are doing something asynhronously
+        });
+    }
+  }
+  
+  pt.run();
+```
+
+Protok.js has some inner mechanism to slow down data parsing and event emitting for the client which bombs the server.
 
 
 ## How synchronous mode work
@@ -165,16 +198,8 @@ var pt = protok.create({
   pt.run();
 ```
 
-Usually the synhronous protocols are made of sequential request and response couples. We can't do anything in the middle of request and response couple. If we are server and we want to send a new request to the client we need to do it between request and responce couples. For this, protok has special 'interrupt' function:
+Usually the synhronous protocols are made of sequential request and response couples. We can't do anything in the middle of request and response couple. If we are server and we want to send a new request to the client we need to do it between request and responce couples. For this, Protok.js has special 'interrupt' function:
 
-```js
-pt.interrupt(function(){
-    someSyncWork();
-    response({status: "ok"});
-    pt.next();
-});
-```
-or
 ```js
 pt.interrupt(function(){
     someAsyncWork(function(){
@@ -185,36 +210,7 @@ pt.interrupt(function(){
 ```
 
 
-
-
-## How asynchronous mode work
-Asynchronous mode in asynchronous javascript world is easier to use and grasp. Just imagine we send many blocks of information to the server and protok parses it and emits request events instantly. There could be dozens of request events emited at the same from the same socket connection. In asynhronous mode everything work more like data packets. Every packet is independed of each other. Asynchronous mode is convenient because many modules or classes can communicate at the same chanell simultaniously. For this type of protocols some routing information in the data packet is needed because it's more like packet exhancging between modules or classes in server and modules or classes in client and in both directions. 
-
-```js
-var protok = require('protok');
-
-var pt = protok.create({
-    socket: socket,
-    async: true,
-  });
-
-  pt.on('json', function(data) {
-    if(data.operation === 'test1') {
-        someSyncFunc(); 
-    }
-    else if(data.operation === 'test2'){
-        someAsynFunc(function() {
-        });
-    }
-  }
-  
-  pt.run();
-```
-
-
-
-
-In synchronous protocol is more important to have response to every request. In asynhronous protocol is more freely, it depends on the situation. If we have tight structure and very independed modules in our project, sending responces  to exactly the same modules and the some operations could be useful f.e. we requested to create an user and then got response about success or failure of this operation. In other case let's say we have sent information about some mobile application use statistic, it's not very useful to receive response about success about receiving that statistical information. It would be better to react for server somehow and trigger other actions like send request to client's another module responsible for popping up some message for the user.
+In synchronous protocol is more important to have response to every request. In asynhronous protocol is more freely, it depends on the situation. If we have tight structure and very independed modules in our project, sending responses  to exactly the same modules and the some operations could be useful f.e. we requested to create an user and then got response about success or failure of this operation. In other case let's say we have sent information about some mobile application use statistic, it's not very useful to receive response about success about receiving that statistical information. It would be better to react for server somehow and trigger other actions like send request to client's another module responsible for popping up some message for the user.
 
 
 
@@ -222,7 +218,7 @@ In synchronous protocol is more important to have response to every request. In 
 
 
 
-Theoretical question: is it possible to send files at the same time in both directions on one connection? I will clear it. One connection = one channel, no multiplexing, no asynchronous packet like protocol. Just after connection directly send binary data as it is. Server send to client, and client sends to server at the same time. What happens? If everything ok, files will be transferred, but channel will not be utilized efficiently, because in this case tcp connection upstream and downstream obstructs each other. So usually it's not used this way. We can solve this in few ways: use separate connection, or multiplex few channels to one connection.
+And for the and theoretical question: is it possible to send files at the same time in both directions on one connection? I will clear it. When I say one connection I mean only one channel, no multiplexing, and no any asynchronous packet like communication. Right after the connection each side starts to directly send binary file data as it is. Server sends to client, and client sends to server at the same time. So what happens? Files will be transferred, but channel will not be utilized efficiently, because in this case tcp connection upstream and downstream obstructs each other. So usually it's not used this way. We can solve this in few ways: use separate connection, or multiplex few channels to one connection.
 
 
 ##Author
